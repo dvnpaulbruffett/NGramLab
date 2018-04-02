@@ -149,6 +149,7 @@ a.increase
         ) a WHERE Rank <= 10;
 ```
 
+## Optional
 Then we can make a final set of data with the changes in prevalence of each of the top 10 words in each decade over time.
 
 ```
