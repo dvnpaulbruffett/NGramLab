@@ -122,5 +122,58 @@ SORT BY
  decade ASC,
  increase DESC;
 ```
+## Changes over time
+Now to show how the 'top trending words' in each decade changed over time we need to construct a new table consisting of filtered words.
+
+```sql
+CREATE TABLE final2
+(
+ gram string,
+ decade int,
+ ratio double,
+increase double
+);
 
 
+INSERT OVERWRITE TABLE final2 
+SELECT
+a.gram,
+CONCAT(a.decade,0),
+a.ratio,
+a.increase
+    FROM (
+        SELECT b.gram,b.decade,b.ratio,b.increase, Rank() 
+          over (Partition BY b.decade
+                ORDER BY b.increase DESC) AS Rank
+        FROM final b
+        ) a WHERE Rank <= 10;
+
+CREATE TABLE final3
+(
+ gram string,
+ decade int,
+ ratio double,
+increase double
+);
+
+
+INSERT OVERWRITE TABLE final3
+SELECT
+ a.gram as gram,
+ a.decade as decade,
+ a.ratio as ratio,
+ a.ratio / b.ratio as increase
+FROM 
+ by_decade a 
+JOIN 
+ by_decade b
+ON
+ a.gram = b.gram and
+ a.decade - 1 = b.decade
+LEFT SEMI JOIN final2 on (a.gram = final2.gram)
+DISTRIBUTE BY
+ decade
+SORT BY
+ gram ASC,
+decade ASC;
+```
