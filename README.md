@@ -123,7 +123,7 @@ SORT BY
  increase DESC;
 ```
 ## Changes over time
-Now to show how the 'top trending words' in each decade changed over time we need to construct a new table consisting of filtered words.
+Now to show how the 'top trending words' in each decade changed over time we need to construct a new table consisting of filtered words.  First we need to create a new intermediate table with just the top 10 words for each decade.
 
 ```sql
 CREATE TABLE final2
@@ -147,7 +147,11 @@ a.increase
                 ORDER BY b.increase DESC) AS Rank
         FROM final b
         ) a WHERE Rank <= 10;
+```
 
+Then we can make a final set of data with the changes in prevalence of each of the top 10 words in each decade over time.
+
+```
 CREATE TABLE final3
 (
  gram string,
